@@ -4,7 +4,7 @@
         "version": "PTDL_v2",
         "update_url": null
     },
-    "exported_at": "2026-03-06T12:00:00+00:00",
+    "exported_at": "2026-03-06T05:18:21+00:00",
     "name": "MyAAC Web Panel",
     "author": "alexveley",
     "description": "MyAAC web panel for Open Tibia. Use the same database as your TFS game server: copy the connection details from your TFS server's Databases tab into this server's Startup Variables. Do not create a database for this server.",
@@ -16,13 +16,13 @@
     "startup": "tail -f \/dev\/null",
     "config": {
         "files": "{}",
-        "startup": "{ \"done\": \"\" }",
+        "startup": "{ \"done\": \"Forgotten Server Online\" }",
         "logs": "{}",
         "stop": "SIGTERM"
     },
     "scripts": {
         "installation": {
-            "script": "#!\/bin\/bash\r\nset -euo pipefail\r\n\r\necho \"=== MyAAC WEB SERVER INSTALLER ===\"\r\n\r\nSERVER_DIR=\"\/mnt\/server\"\r\ncd \"$SERVER_DIR\"\r\n\r\n# ------------------------\r\n# Ensure tools\r\n# ------------------------\r\nif ! command -v git >\/dev\/null 2>&1; then\r\n  apt-get update\r\n  apt-get install -y git curl ca-certificates\r\nfi\r\n\r\n# ------------------------\r\n# MyAAC\r\n# ------------------------\r\nif [ ! -d myaac ]; then\r\n  echo \"Cloning MyAAC...\"\r\n  git clone https:\/\/github.com\/slawkens\/myaac.git myaac\r\nfi\r\n\r\ncd myaac\r\n\r\nif [ ! -f composer.phar ]; then\r\n  echo \"Downloading Composer...\"\r\n  curl -sS https:\/\/getcomposer.org\/installer | php\r\nfi\r\n\r\nif [ ! -d vendor ]; then\r\n  echo \"Installing PHP dependencies...\"\r\n  php composer.phar install --no-dev --optimize-autoloader\r\nfi\r\n\r\nmkdir -p system\/cache images\r\nchmod -R 775 system\/cache images\r\n\r\necho \"=== MyAAC INSTALLER END ===\"",
+            "script": "#!\/bin\/bash\r\nset -euo pipefail\r\n\r\necho \"=== MyAAC INSTALLER START ===\"\r\n\r\nSERVER_DIR=\"\/mnt\/server\"\r\ncd \"$SERVER_DIR\"\r\n\r\n# ------------------------\r\n# Ensure tools\r\n# ------------------------\r\nif ! command -v git >\/dev\/null 2>&1; then\r\n  apt-get update\r\n  apt-get install -y \\\r\n    git \\\r\n    curl \\\r\n    ca-certificates\r\nfi\r\n\r\n# ------------------------\r\n# MyAAC\r\n# ------------------------\r\nif [ ! -d myaac ]; then\r\n  echo \"Cloning MyAAC...\"\r\n  git clone https:\/\/github.com\/slawkens\/myaac.git myaac\r\nfi\r\n\r\ncd myaac\r\n\r\nif [ ! -f composer.phar ]; then\r\n  echo \"Downloading Composer...\"\r\n  curl -sS https:\/\/getcomposer.org\/installer | php\r\nfi\r\n\r\nif [ ! -d vendor ]; then\r\n  echo \"Installing PHP dependencies...\"\r\n  php composer.phar install --no-dev --optimize-autoloader\r\nfi\r\n\r\nmkdir -p system\/cache\r\nchmod -R 775 system\/cache images\r\n\r\necho \"=== MyAAC INSTALLER END ===\"",
             "container": "ghcr.io\/ptero-eggs\/installers:debian",
             "entrypoint": "bash"
         }
@@ -30,19 +30,19 @@
     "variables": [
         {
             "name": "Web Port",
-            "description": "Port for HTTP (e.g. 8080). Assign this allocation to the server.",
+            "description": "",
             "env_variable": "WEB_PORT",
             "default_value": "8080",
-            "user_viewable": true,
-            "user_editable": true,
+            "user_viewable": false,
+            "user_editable": false,
             "rules": "required|integer|between:1024,65535",
             "field_type": "text"
         },
         {
             "name": "MySQL Host",
-            "description": "Same as your TFS server. Copy from TFS server's Databases tab.",
+            "description": "",
             "env_variable": "MYSQL_HOST",
-            "default_value": "",
+            "default_value": "db",
             "user_viewable": true,
             "user_editable": true,
             "rules": "required|string|max:191",
@@ -50,9 +50,9 @@
         },
         {
             "name": "MySQL User",
-            "description": "Same as your TFS server. Copy from TFS server's Databases tab.",
+            "description": "",
             "env_variable": "MYSQL_USER",
-            "default_value": "",
+            "default_value": "root",
             "user_viewable": true,
             "user_editable": true,
             "rules": "required|string|max:191",
@@ -60,7 +60,7 @@
         },
         {
             "name": "MySQL Password",
-            "description": "Same as your TFS server. Copy from TFS server's Databases tab.",
+            "description": "",
             "env_variable": "MYSQL_PASSWORD",
             "default_value": "",
             "user_viewable": true,
@@ -70,9 +70,9 @@
         },
         {
             "name": "MySQL Database",
-            "description": "Same as your TFS server. Copy from TFS server's Databases tab.",
+            "description": "",
             "env_variable": "MYSQL_DATABASE",
-            "default_value": "",
+            "default_value": "forgottenserver",
             "user_viewable": true,
             "user_editable": true,
             "rules": "required|string|max:191",
@@ -80,7 +80,7 @@
         },
         {
             "name": "MySQL Port",
-            "description": "Same as your TFS server (usually 3306).",
+            "description": "",
             "env_variable": "MYSQL_PORT",
             "default_value": "3306",
             "user_viewable": true,
