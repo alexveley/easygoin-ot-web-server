@@ -23,3 +23,5 @@ docker run --rm -e WEB_PORT=8080 -e MYSQL_HOST=host.docker.internal -e MYSQL_USE
 ## Pterodactyl
 
 Import the egg from `egg-myaac-web.json`. The installation script clones MyAAC and runs Composer. Set the MySQL variables to match your TFS server's database.
+
+See **[TWO-SERVER-SETUP.md](TWO-SERVER-SETUP.md)** for the full workflow.
