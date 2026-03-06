@@ -1,27 +1,29 @@
 {
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
     "meta": {
         "version": "PTDL_v2",
         "update_url": null
     },
+    "exported_at": "2026-03-06T12:00:00+00:00",
     "name": "MyAAC Web Panel",
     "author": "alexveley",
     "description": "MyAAC web panel for Open Tibia. Use the same database as your TFS game server: copy the connection details from your TFS server's Databases tab into this server's Startup Variables. Do not create a database for this server.",
     "features": null,
     "docker_images": {
-        "ghcr.io/alexveley/easygoin-ot-web-server:v1.6": "ghcr.io/alexveley/easygoin-ot-web-server:v1.6"
+        "ghcr.io\/alexveley\/easygoin-ot-web-server:v1.6": "ghcr.io\/alexveley\/easygoin-ot-web-server:v1.6"
     },
     "file_denylist": [],
-    "startup": "tail -f /dev/null",
+    "startup": "tail -f \/dev\/null",
     "config": {
         "files": "{}",
-        "startup": "{}",
+        "startup": "{ \"done\": \"\" }",
         "logs": "{}",
         "stop": "SIGTERM"
     },
     "scripts": {
         "installation": {
-            "script": "#!/bin/bash\nset -euo pipefail\n\necho \"=== MyAAC WEB SERVER INSTALLER ===\"\n\nSERVER_DIR=\"/mnt/server\"\ncd \"$SERVER_DIR\"\n\nif ! command -v git >/dev/null 2>&1; then\n  apt-get update\n  apt-get install -y git curl ca-certificates\nfi\n\nif [ ! -d myaac ]; then\n  echo \"Cloning MyAAC...\"\n  git clone https://github.com/slawkens/myaac.git myaac\nfi\n\ncd myaac\n\nif [ ! -f composer.phar ]; then\n  echo \"Downloading Composer...\"\n  curl -sS https://getcomposer.org/installer | php\nfi\n\nif [ ! -d vendor ]; then\n  echo \"Installing PHP dependencies...\"\n  php composer.phar install --no-dev --optimize-autoloader\nfi\n\nmkdir -p system/cache images\nchmod -R 775 system/cache images\n\nif [ -n \"${MYSQL_HOST:-}\" ] && [ ! -f config.local.php ]; then\n  echo \"Writing config.local.php from environment...\"\n  cat > config.local.php <<EOPHP\n<?php\n\\$config['database_host'] = getenv('MYSQL_HOST') ?: 'localhost';\n\\$config['database_port'] = getenv('MYSQL_PORT') ?: '3306';\n\\$config['database_user'] = getenv('MYSQL_USER') ?: 'root';\n\\$config['database_password'] = getenv('MYSQL_PASSWORD') ?: '';\n\\$config['database_name'] = getenv('MYSQL_DATABASE') ?: 'forgottenserver';\nEOPHP\nfi\n\necho \"=== MyAAC INSTALLER END ===\"",
-            "container": "ghcr.io/ptero-eggs/installers:debian",
+            "script": "#!\/bin\/bash\r\nset -euo pipefail\r\n\r\necho \"=== MyAAC WEB SERVER INSTALLER ===\"\r\n\r\nSERVER_DIR=\"\/mnt\/server\"\r\ncd \"$SERVER_DIR\"\r\n\r\n# ------------------------\r\n# Ensure tools\r\n# ------------------------\r\nif ! command -v git >\/dev\/null 2>&1; then\r\n  apt-get update\r\n  apt-get install -y git curl ca-certificates\r\nfi\r\n\r\n# ------------------------\r\n# MyAAC\r\n# ------------------------\r\nif [ ! -d myaac ]; then\r\n  echo \"Cloning MyAAC...\"\r\n  git clone https:\/\/github.com\/slawkens\/myaac.git myaac\r\nfi\r\n\r\ncd myaac\r\n\r\nif [ ! -f composer.phar ]; then\r\n  echo \"Downloading Composer...\"\r\n  curl -sS https:\/\/getcomposer.org\/installer | php\r\nfi\r\n\r\nif [ ! -d vendor ]; then\r\n  echo \"Installing PHP dependencies...\"\r\n  php composer.phar install --no-dev --optimize-autoloader\r\nfi\r\n\r\nmkdir -p system\/cache images\r\nchmod -R 775 system\/cache images\r\n\r\necho \"=== MyAAC INSTALLER END ===\"",
+            "container": "ghcr.io\/ptero-eggs\/installers:debian",
             "entrypoint": "bash"
         }
     },
