@@ -1,0 +1,90 @@
+{
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "name": "MyAAC Web Panel",
+    "author": "alexveley",
+    "description": "MyAAC web panel for Open Tibia. Use the same database as your TFS game server: copy the connection details from your TFS server's Databases tab into this server's Startup Variables. Do not create a database for this server.",
+    "features": null,
+    "docker_images": {
+        "ghcr.io/alexveley/easygoin-ot-web-server:v1.6": "ghcr.io/alexveley/easygoin-ot-web-server:v1.6"
+    },
+    "file_denylist": [],
+    "startup": "tail -f /dev/null",
+    "config": {
+        "files": "{}",
+        "startup": "{}",
+        "logs": "{}",
+        "stop": "SIGTERM"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\nset -euo pipefail\n\necho \"=== MyAAC WEB SERVER INSTALLER ===\"\n\nSERVER_DIR=\"/mnt/server\"\ncd \"$SERVER_DIR\"\n\nif ! command -v git >/dev/null 2>&1; then\n  apt-get update\n  apt-get install -y git curl ca-certificates\nfi\n\nif [ ! -d myaac ]; then\n  echo \"Cloning MyAAC...\"\n  git clone https://github.com/slawkens/myaac.git myaac\nfi\n\ncd myaac\n\nif [ ! -f composer.phar ]; then\n  echo \"Downloading Composer...\"\n  curl -sS https://getcomposer.org/installer | php\nfi\n\nif [ ! -d vendor ]; then\n  echo \"Installing PHP dependencies...\"\n  php composer.phar install --no-dev --optimize-autoloader\nfi\n\nmkdir -p system/cache images\nchmod -R 775 system/cache images\n\nif [ -n \"${MYSQL_HOST:-}\" ] && [ ! -f config.local.php ]; then\n  echo \"Writing config.local.php from environment...\"\n  cat > config.local.php <<EOPHP\n<?php\n\\$config['database_host'] = getenv('MYSQL_HOST') ?: 'localhost';\n\\$config['database_port'] = getenv('MYSQL_PORT') ?: '3306';\n\\$config['database_user'] = getenv('MYSQL_USER') ?: 'root';\n\\$config['database_password'] = getenv('MYSQL_PASSWORD') ?: '';\n\\$config['database_name'] = getenv('MYSQL_DATABASE') ?: 'forgottenserver';\nEOPHP\nfi\n\necho \"=== MyAAC INSTALLER END ===\"",
+            "container": "ghcr.io/ptero-eggs/installers:debian",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Web Port",
+            "description": "Port for HTTP (e.g. 8080). Assign this allocation to the server.",
+            "env_variable": "WEB_PORT",
+            "default_value": "8080",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|between:1024,65535",
+            "field_type": "text"
+        },
+        {
+            "name": "MySQL Host",
+            "description": "Same as your TFS server. Copy from TFS server's Databases tab.",
+            "env_variable": "MYSQL_HOST",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:191",
+            "field_type": "text"
+        },
+        {
+            "name": "MySQL User",
+            "description": "Same as your TFS server. Copy from TFS server's Databases tab.",
+            "env_variable": "MYSQL_USER",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:191",
+            "field_type": "text"
+        },
+        {
+            "name": "MySQL Password",
+            "description": "Same as your TFS server. Copy from TFS server's Databases tab.",
+            "env_variable": "MYSQL_PASSWORD",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "present|string|max:191",
+            "field_type": "text"
+        },
+        {
+            "name": "MySQL Database",
+            "description": "Same as your TFS server. Copy from TFS server's Databases tab.",
+            "env_variable": "MYSQL_DATABASE",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:191",
+            "field_type": "text"
+        },
+        {
+            "name": "MySQL Port",
+            "description": "Same as your TFS server (usually 3306).",
+            "env_variable": "MYSQL_PORT",
+            "default_value": "3306",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|between:1,65535",
+            "field_type": "text"
+        }
+    ]
+}
